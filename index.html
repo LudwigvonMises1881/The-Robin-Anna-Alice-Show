@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Robin-Anna-Alice Show</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#635BFF',
+                        secondary: '#FF6B8B',
+                        dark: '#2A2A48',
+                        light: '#F5F5F7',
+                        accent: '#43D8C9',
+                        bitcoin: '#F7931A' // Bitcoin orange color
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom Utilities -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .podcast-card-hover {
+                @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+            }
+            .gradient-overlay {
+                @apply bg-gradient-to-t from-dark/80 to-transparent;
+            }
+            .qr-hover-container {
+                @apply relative inline-block;
+            }
+            .qr-code {
+                @apply absolute right-0 mt-2 w-48 h-48 bg-white p-2 rounded-lg shadow-2xl opacity-0 invisible transition-all duration-300 z-10;
+            }
+            .qr-hover-trigger:hover + .qr-code {
+                @apply opacity-100 visible;
+            }
+        }
+    </style>
+    
+    <!-- Additional Styles -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap');
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Loading animation */
+        .loader {
+            border-top-color: #635BFF;
+            animation: spinner 0.8s linear infinite;
+        }
+        
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Success message */
+        .success-message {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Bitcoin address styling */
+        .bitcoin-address {
+            font-family: monospace;
+            word-break: break-all;
+        }
+    </style>
+</head>
+
+<body class="bg-dark text-white antialiased">
+    <!-- Navigation -->
+    <header id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-transparent">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="#" class="flex items-center space-x-2">
+                <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                    <i class="fa fa-microphone text-white text-xl"></i>
+                </div>
+                <span class="font-display font-bold text-xl md:text-2xl text-white drop-shadow-md">
+                    The Robin-Anna-Alice Show
+                </span>
+            </a>
+            
+            <!-- Mobile menu button -->
+            <button id="menu-toggle" class="md:hidden text-white text-2xl focus:outline-none">
+                <i class="fa fa-bars"></i>
+            </button>
+            
+            <!-- Desktop navigation -->
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="#home" class="text-white hover:text-accent transition-colors font-medium">Home</a>
+                <a href="#about" class="text-white hover:text-accent transition-colors font-medium">About</a>
+                <a href="#episodes" class="text-white hover:text-accent transition-colors font-medium">Episodes</a>
+                <a href="#donate" class="text-white hover:text-bitcoin transition-colors font-medium">Donate</a>
+                <a href="#contact" class="text-white hover:text-accent transition-colors font-medium">Contact</a>
+                <button class="subscribe-btn bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-full transition-all transform hover:scale-105">
+                    Subscribe
+                </button>
+            </nav>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="md:hidden bg-dark/95 hidden">
+            <div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
+                <a href="#home" class="text-white hover:text-accent transition-colors py-2 border-b border-gray-700">Home</a>
+                <a href="#about" class="text-white hover:text-accent transition-colors py-2 border-b border-gray-700">About</a>
+                <a href="#episodes" class="text-white hover:text-accent transition-colors py-2 border-b border-gray-700">Episodes</a>
+                <a href="#donate" class="text-white hover:text-bitcoin transition-colors py-2 border-b border-gray-700">Donate</a>
+                <a href="#contact" class="text-white hover:text-accent transition-colors py-2">Contact</a>
+                <button class="subscribe-btn bg-primary hover:bg-primary/90 text-white px-5 py-3 rounded-full transition-all">
+                    Subscribe
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="background.png" alt="Podcast background showing three hosts in discussion" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-dark/60"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 z-10 text-center">
+            <div class="max-w-3xl mx-auto">
+                <h1 class="font-display font-bold text-[clamp(2.5rem,8vw,5rem)] leading-tight text-white mb-6">
+                    The Robin-Anna-Alice Show
+                </h1>
+                <p class="text-[clamp(1rem,3vw,1.25rem)] text-gray-100 mb-10 max-w-2xl mx-auto">
+                    Think Free, Talk Austrian; Supply Laughs, Demand Wisdom; No Central Planning, Just Central Laughing.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="#episodes" class="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-full text-lg font-medium transition-all transform hover:scale-105">
+                        Browse Episodes
+                    </a>
+                    <a href="#about" class="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/30 px-8 py-4 rounded-full text-lg font-medium transition-all">
+                        Learn More
+                    </a>
+                </div>
+                
+                <div class="mt-16">
+                    <p class="text-gray-300 mb-4">Listen on your favourite platform</p>
+                    <div class="flex justify-center space-x-6">
+                        <a href="https://open.spotify.com/show/6gkxB6BnQbTGbMpnGFN3eC" target="_blank" class="text-white hover:text-accent text-2xl transition-colors">
+                            <i class="fa fa-spotify"></i>
+                        </a>
+                        <a href="https://photos.app.goo.gl/iVp9y5xCWgyhuB9u8" target="_blank" class="text-white hover:text-accent text-2xl transition-colors">
+                            <i class="fa fa-google"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-gray-900">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="font-display font-bold text-[clamp(1.5rem,3vw,2.5rem)] mb-4">About Our Show</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-gray-300 max-w-2xl mx-auto text-lg">
+                    This is the Robin-Anna-Alice Show, hosted by three lovers of the Austrian School of Economics. Stay tuned! You'll be embracing the charm of the Austrian School of Economics!
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Episodes Section -->
+    <section id="episodes" class="py-20 bg-gray-900">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="font-display font-bold text-[clamp(1.5rem,3vw,2.5rem)] mb-4">Latest Episodes</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-gray-300 max-w-2xl mx-auto text-lg">
+                    Browse our latest podcast content. Click on any episode to listen to the full content.
+                </p>
+            </div>
+            
+            <!-- Search and Sorting -->
+            <div class="max-w-4xl mx-auto mb-12">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="relative w-full md:w-auto">
+                        <input type="text" id="search-episodes" placeholder="Search episodes here..." 
+                            class="w-full md:w-64 px-4 py-3 rounded-full border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <i class="fa fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                    
+                    <div class="w-full md:w-auto">
+                        <label for="sort-episodes" class="text-gray-300 mr-2 self-center">Sort by:</label>
+                        <select id="sort-episodes" class="px-3 py-2 rounded-lg border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <option value="latest">Latest Date</option>
+                            <option value="earliest">Earliest Date</option>
+                            <option value="alpha-asc">Alphabetical (A-Z)</option>
+                            <option value="alpha-desc">Alphabetical (Z-A)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Episodes list -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Episode 1 -->
+                <div class="episode-card bg-gray-800 rounded-xl overflow-hidden shadow-md podcast-card-hover" 
+                     data-category="Economics"
+                     data-keywords="government, money printing, inflation, economy, currency, policy"
+                     data-spotify="https://open.spotify.com/episode/0tNi2qbabTbPxRVkW7l5wt">
+                    <div class="relative h-48">
+                        <div class="absolute top-2 left-2 bg-primary text-white text-sm font-bold px-3 py-1 rounded-full z-10">
+                            Episode 1
+                        </div>
+                        <img src="background.png" alt="Government money printing illustration" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 gradient-overlay flex items-end">
+                            <div class="p-4 w-full">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-white text-sm episode-date">24 Jan 2025</span>
+                                    <span class="text-white text-sm"><i class="fa fa-clock-o mr-1"></i> 10:10</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2">Disincentivising Governments from Printing Money</h3>
+                        <p class="text-gray-300 mb-4 line-clamp-3">
+                            In this inaugural episode of the Robin Show, we delve into the perilous consequences of unchecked government money printing. We explore the role of constitutionalism in curbing this practice and then examine the gold standard as a potential solution. Join us as we unpack the complexities of monetary policy and its impact on our economy.
+                        </p>
+                        <button class="play-episode w-full bg-gray-700 hover:bg-primary hover:text-white transition-colors py-3 rounded-lg font-medium flex items-center justify-center">
+                            <i class="fa fa-play mr-2"></i> Play
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Episode 2 -->
+                <div class="episode-card bg-gray-800 rounded-xl overflow-hidden shadow-md podcast-card-hover" 
+                     data-category="Technology"
+                     data-keywords="bitcoin, cryptocurrency, blockchain, digital currency, future of money, market"
+                     data-spotify="https://open.spotify.com/episode/0N765wztflYTM1lQSmwpHh">
+                    <div class="relative h-48">
+                        <div class="absolute top-2 left-2 bg-primary text-white text-sm font-bold px-3 py-1 rounded-full z-10">
+                            Episode 2
+                        </div>
+                        <img src="background.png" alt="Bitcoin and blockchain technology illustration" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 gradient-overlay flex items-end">
+                            <div class="p-4 w-full">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-white text-sm episode-date">15 Feb 2025</span>
+                                    <span class="text-white text-sm"><i class="fa fa-clock-o mr-1"></i> 05:43</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2">Bitcoin vs Gold: The Digital Gold Debate</h3>
+                        <p class="text-gray-300 mb-4 line-clamp-3">
+                            In this episode, we explore the nature of money, the role of commodities in the price system, and compare Bitcoin to gold. Is bitcoin the digital gold of our time? Tune in to find out!
+                        </p>
+                        <button class="play-episode w-full bg-gray-700 hover:bg-primary hover:text-white transition-colors py-3 rounded-lg font-medium flex items-center justify-center">
+                            <i class="fa fa-play mr-2"></i> Play
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <button id="load-more" class="px-8 py-3 bg-gray-800 border border-primary text-primary hover:bg-primary hover:text-white rounded-full transition-colors font-medium">
+                    Load More <i class="fa fa-refresh ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bitcoin Donation Section -->
+    <section id="donate" class="py-20 bg-gray-900 border-t border-gray-800">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="font-display font-bold text-[clamp(1.5rem,3vw,2.5rem)] mb-4 flex items-center justify-center">
+                    <i class="fa fa-bitcoin text-bitcoin mr-3"></i> Support Our Show
+                </h2>
+                <div class="w-20 h-1 bg-bitcoin mx-auto mb-6"></div>
+                <p class="text-gray-300 max-w-2xl mx-auto text-lg">
+                    If you enjoy our content, consider supporting us with a Bitcoin donation. Your contributions help us continue producing quality episodes.
+                </p>
+            </div>
+            
+            <div class="max-w-2xl mx-auto bg-gray-800 rounded-xl p-8 shadow-lg">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div class="flex-1 text-center md:text-left">
+                        <h3 class="text-xl font-bold mb-4 text-bitcoin">Bitcoin Donations</h3>
+                        
+                        <!-- Hoverable Bitcoin address with QR code -->
+                        <div class="qr-hover-container">
+                            <span class="qr-hover-trigger text-white font-medium underline cursor-pointer text-bitcoin">
+                                Hover over me to reveal the QR code.
+                            </span>
+                            <div class="qr-code">
+                                <!-- Replace with your actual Bitcoin QR code -->
+                                <img src="Bitcoin Address.png" alt="bc1qqcg0y23q2nt6ztgqmkx67m4uwmuh2f07rkv5wc" class="w-full h-full object-contain">
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <div class="flex-1 flex justify-center">
+                        <div class="w-24 h-24 rounded-full bg-bitcoin/10 flex items-center justify-center">
+                            <i class="fa fa-bitcoin text-bitcoin text-5xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Subscription Section -->
+    <section id="subscribe-section" class="py-20 bg-primary/10">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2">
+                    <div class="p-8 md:p-12 flex flex-col justify-center">
+                        <h2 class="font-display font-bold text-2xl md:text-3xl mb-4">
+                            Never Miss an Episode
+                        </h2>
+                        <p class="text-gray-300 mb-6">
+                            Subscribe to our podcast on Spotify to get the latest updates as soon as they're released.
+                        </p>
+                        
+                        <a href="https://open.spotify.com/show/6gkxB6BnQbTGbMpnGFN3eC" target="_blank" 
+                           class="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-lg font-medium transition-colors text-center text-lg">
+                            <i class="fa fa-spotify mr-2"></i> Subscribe on Spotify
+                        </a>
+                    </div>
+                    <div class="hidden md:block relative">
+                        <img src="https://img.freepik.com/premium-photo/smartphone-playing-podcast-mobile-phone-laptop-headphones-violet-background-concept-listening-podcast_673750-125.jpg" 
+                             alt="Smartphone playing podcast with headphones" class="absolute inset-0 w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-gray-900">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="font-display font-bold text-[clamp(1.5rem,3vw,2.5rem)] mb-4">Get In Touch</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-gray-300 max-w-2xl mx-auto text-lg">
+                    Have any questions, suggestions, or collaboration ideas? Feel free to contact us.
+                </p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto text-center">
+                <div class="grid grid-cols-1 gap-8 mb-12 justify-items-center">
+                    <div class="text-center max-w-xs">
+                        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fa fa-envelope text-primary text-2xl"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">Email Us</h3>
+                        <a href="mailto:ludwigvonmises1881@outlook.com" class="text-primary hover:text-accent transition-colors text-lg font-medium">
+                            ludwigvonmises1881@outlook.com
+                        </a>
+                        <p class="text-gray-400 mt-2">Click on it and send us a message.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="border-t border-gray-800 pt-8 flex justify-center items-center">
+                <p class="text-gray-500 text-sm">
+                    &copy; 2025 The Robin-Anna-Alice Show. 
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Audio Player Modal with Embedded Spotify Player -->
+    <div id="audio-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-auto transform transition-all">
+            <div class="relative">
+                <!-- Close Button -->
+                <button id="close-modal" class="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full z-20 transition-colors">
+                    <i class="fa fa-times"></i>
+                </button>
+                
+                <img id="modal-cover" src="" alt="Podcast cover" class="w-full h-64 object-cover">
+                <div class="absolute inset-0 gradient-overlay flex items-end">
+                    <div class="p-6 w-full">
+                        <h3 id="modal-title" class="text-2xl font-bold text-white mb-2"></h3>
+                        <div class="flex justify-between items-center">
+                            <span id="modal-date" class="text-white/90 text-sm"></span>
+                            <span id="modal-duration" class="text-white/90 text-sm"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6">
+                <!-- Spotify Player Container -->
+                <div id="spotify-player" class="mb-6"></div>
+                
+                <h4 class="font-bold text-lg mb-2">Description</h4>
+                <p id="modal-description" class="text-gray-300 mb-6"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            const icon = menuToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-dark/95', 'backdrop-blur-sm', 'shadow-lg');
+                navbar.classList.remove('bg-transparent');
+            } else {
+                navbar.classList.remove('bg-dark/95', 'backdrop-blur-sm', 'shadow-lg');
+                navbar.classList.add('bg-transparent');
+            }
+        });
+
+        // Subscribe button scroll
+        document.querySelectorAll('.subscribe-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('subscribe-section').scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('search-episodes');
+        const episodeCards = document.querySelectorAll('.episode-card');
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            
+            episodeCards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const date = card.querySelector('.episode-date').textContent.toLowerCase();
+                const description = card.querySelector('p').textContent.toLowerCase();
+                const episodeNumber = card.querySelector('.absolute.top-2').textContent.toLowerCase();
+                
+                const matchesSearch = title.includes(searchTerm) || 
+                                     date.includes(searchTerm) || 
+                                     description.includes(searchTerm) ||
+                                     episodeNumber.includes(searchTerm);
+                
+                card.style.display = matchesSearch ? 'block' : 'none';
+            });
+        });
+
+        // Sorting functionality
+        const sortSelect = document.getElementById('sort-episodes');
+        const episodesContainer = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3');
+
+        // Parse date with error handling
+        const parseEpisodeDate = (dateString) => {
+            try {
+                const [day, month, year] = dateString.split(' ');
+                if (!day || !month || !year) throw new Error('Invalid date format');
+                
+                const monthMap = {
+                    'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'may': 4, 'jun': 5,
+                    'jul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11
+                };
+                
+                const monthNum = monthMap[month.toLowerCase()];
+                if (monthNum === undefined) throw new Error('Invalid month');
+                
+                return new Date(year, monthNum, day);
+            } catch (error) {
+                console.error('Error parsing date:', error, 'Date string:', dateString);
+                return new Date(0); // Default to epoch if parsing fails
+            }
+        };
+
+        // Sort episodes with explicit comparison
+        const sortEpisodes = (order) => {
+            const episodeCards = Array.from(document.querySelectorAll('.episode-card'));
+            
+            episodeCards.sort((a, b) => {
+                // Get date elements using the specific class
+                const dateElementA = a.querySelector('.episode-date');
+                const dateElementB = b.querySelector('.episode-date');
+                
+                if (!dateElementA || !dateElementB) return 0;
+                
+                const dateA = parseEpisodeDate(dateElementA.textContent);
+                const dateB = parseEpisodeDate(dateElementB.textContent);
+                const titleA = a.querySelector('h3').textContent.toLowerCase();
+                const titleB = b.querySelector('h3').textContent.toLowerCase();
+
+                switch(order) {
+                    case 'latest':
+                        // Newest first
+                        return dateB.getTime() - dateA.getTime();
+                    case 'earliest':
+                        // Oldest first
+                        return dateA.getTime() - dateB.getTime();
+                    case 'alpha-asc':
+                        return titleA.localeCompare(titleB);
+                    case 'alpha-desc':
+                        return titleB.localeCompare(titleA);
+                    default:
+                        return dateB.getTime() - dateA.getTime();
+                }
+            });
+            
+            // Re-render sorted episodes
+            episodeCards.forEach(card => {
+                episodesContainer.appendChild(card);
+            });
+        };
+
+        // Trigger sort when selection changes
+        sortSelect.addEventListener('change', () => {
+            sortEpisodes(sortSelect.value);
+        });
+
+        // Initialize with latest episodes first
+        window.addEventListener('DOMContentLoaded', () => {
+            sortEpisodes('latest');
+        });
+
+        // Audio player functionality with embedded Spotify player
+        const audioModal = document.getElementById('audio-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDate = document.getElementById('modal-date');
+        const modalDuration = document.getElementById('modal-duration');
+        const modalDescription = document.getElementById('modal-description');
+        const modalCover = document.getElementById('modal-cover');
+        const spotifyPlayer = document.getElementById('spotify-player');
+        const closeModal = document.getElementById('close-modal');
+
+        // Function to create Spotify embed player
+        const createSpotifyPlayer = (episodeUrl) => {
+            // Extract episode ID from Spotify URL (format: https://open.spotify.com/episode/EPISODE_ID)
+            const episodeId = episodeUrl.split('/').pop();
+            
+            // Clear previous player
+            spotifyPlayer.innerHTML = '';
+            
+            // Create iframe for Spotify embed
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://open.spotify.com/embed/episode/${episodeId}`;
+            iframe.width = '100%';
+            iframe.height = '80'; // Standard height for Spotify player
+            iframe.frameBorder = '0';
+            iframe.allow = 'encrypted-media; clipboard-write';
+            iframe.allowFullscreen = true;
+            
+            spotifyPlayer.appendChild(iframe);
+        };
+
+        document.querySelectorAll('.play-episode').forEach(button => {
+            button.addEventListener('click', () => {
+                const episodeCard = button.closest('.episode-card');
+                const spotifyUrl = episodeCard.dataset.spotify;
+                const title = episodeCard.querySelector('h3').textContent;
+                const date = episodeCard.querySelector('.episode-date').textContent;
+                const duration = episodeCard.querySelector('.fa-clock-o').parentElement.textContent;
+                const description = episodeCard.querySelector('p').textContent;
+                const coverImg = episodeCard.querySelector('img').src;
+
+                // Update modal content
+                modalTitle.textContent = title;
+                modalDate.textContent = date;
+                modalDuration.textContent = duration;
+                modalDescription.textContent = description;
+                modalCover.src = coverImg;
+
+                // Create and display Spotify player
+                createSpotifyPlayer(spotifyUrl);
+
+                // Show modal
+                audioModal.classList.remove('hidden');
+            });
+        });
+
+        // Close modal handlers
+        closeModal.addEventListener('click', () => {
+            audioModal.classList.add('hidden');
+        });
+
+        audioModal.addEventListener('click', (e) => {
+            if (e.target === audioModal) {
+                audioModal.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('load-more').addEventListener('click', () => {
+            alert('In a full implementation, this would load more episodes!');
+        });
+
+        // Bitcoin donation section enhancements for mobile
+        // Show QR code on click for touch devices
+        document.querySelector('.qr-hover-trigger').addEventListener('click', function() {
+            const qrCode = document.querySelector('.qr-code');
+            qrCode.classList.toggle('opacity-100');
+            qrCode.classList.toggle('visible');
+        });
+    </script>
+</body>
+</html>
