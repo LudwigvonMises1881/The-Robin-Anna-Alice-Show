@@ -118,6 +118,61 @@
         #pagination-controls {
             animation: fadeIn 0.3s ease-in-out;
         }
+
+        /* Episodes section container - defines the boundary for sticky elements */
+        #episodes {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 0;
+            margin-bottom: 2rem; /* Space before next sections */
+            position: relative; /* Establishes context for sticky children */
+        }
+
+        /* Episode grid container */
+        #episodes .max-w-6xl.mx-auto {
+            width: 100%;
+            margin-bottom: 1rem; /* Space between episodes and pagination */
+        }
+
+        /* Pagination container - sticks to bottom of episodes section */
+        #pagination-controls {
+            /* Sticks to bottom of its nearest scrolling container (#episodes) */
+            position: sticky;
+            bottom: 0; /* Anchors to bottom of the episodes section */
+            
+            width: 100%;
+            max-width: 6xl;
+            background-color: rgba(30, 30, 46, 0.95);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 50; /* Stays above episode content but not global */
+        }
+
+        /* Flexible episode cards */
+        .episode-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .episode-card .p-6 {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .episode-card p {
+            flex: 1;
+        }
+
+        /* Example next section styling to demonstrate separation */
+        #next-section {
+            padding: 4rem 2rem;
+            background-color: #1a1a2e; /* Different background to show section separation */
+        }
     </style>
 </head>
 
@@ -925,34 +980,55 @@
             }
         });
 
-        // Wait for the DOM to be fully loaded
+        // Update pagination click handlers to NOT scroll
         document.addEventListener('DOMContentLoaded', function() {
-            // Get references to key elements
-            const episodesSection = document.getElementById('episodes');
+            // Get pagination elements
             const prevPageBtn = document.getElementById('prev-page');
             const nextPageBtn = document.getElementById('next-page');
             const pageNumbersContainer = document.getElementById('page-numbers');
+            
+            // Basic pagination state
+            let currentPage = 1;
+            const totalPages = 5; // Replace with your actual total pages calculation
 
-            // Function to scroll to the top of the episodes section
-            function scrollToEpisodesTop() {
-                episodesSection.scrollIntoView({ 
-                    behavior: 'smooth', // Smooth scroll animation
-                    block: 'start'      // Align to top of the section
+            // Pagination logic - no scroll triggers
+            if (prevPageBtn) {
+                prevPageBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderEpisodes();
+                    }
                 });
             }
 
-            // Add click handlers to pagination controls
-            prevPageBtn.addEventListener('click', scrollToEpisodesTop);
-            nextPageBtn.addEventListener('click', scrollToEpisodesTop);
+            if (nextPageBtn) {
+                nextPageBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        renderEpisodes();
+                    }
+                });
+            }
 
-            // Handle dynamic page number buttons using event delegation
-            pageNumbersContainer.addEventListener('click', function(e) {
-                if (e.target.tagName === 'BUTTON') {
-                    scrollToEpisodesTop();
-                }
-            });
-        });
+            if (pageNumbersContainer) {
+                pageNumbersContainer.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'BUTTON') {
+                        e.preventDefault();
+                        currentPage = parseInt(e.target.textContent);
+                        renderEpisodes();
+                    }
+                });
+            }
 
+            // Update episode display (replace with your actual rendering)
+            function renderEpisodes() {
+                console.log(`Rendering episode page ${currentPage}`);
+                // Your episode update logic here
+            }
+        });         
+          
         // Bitcoin address copy functionality with enhanced UX
         const bitcoinQr = document.getElementById('bitcoin-qr');
         const copyMessage = document.getElementById('copy-message');
