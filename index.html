@@ -91,6 +91,33 @@
             font-family: monospace;
             word-break: break-all;
         }
+
+        /* Pagination styles */
+        #page-numbers button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #374151;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        #page-numbers button:hover {
+            background-color: #635BFF;
+            transform: scale(1.1);
+        }
+
+        #page-numbers button.active {
+            background-color: #635BFF;
+            font-weight: bold;
+            border: 2px solid white;
+        }
+
+        #pagination-controls {
+            animation: fadeIn 0.3s ease-in-out;
+        }
     </style>
 </head>
 
@@ -203,7 +230,7 @@
                 </p>
             </div>
             
-            <!-- Search and Sorting -->
+            <!-- Replace the existing search and sorting section with this -->
             <div class="max-w-4xl mx-auto mb-12">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                     <div class="relative w-full md:w-auto">
@@ -212,16 +239,53 @@
                         <i class="fa fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                     </div>
                     
-                    <div class="w-full md:w-auto">
-                        <label for="sort-episodes" class="text-gray-300 mr-2 self-center">Sort by:</label>
-                        <select id="sort-episodes" class="px-3 py-2 rounded-lg border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-primary/50">
-                            <option value="latest">Latest Date</option>
-                            <option value="earliest">Earliest Date</option>
-                            <option value="alpha-asc">Alphabetical (A-Z)</option>
-                            <option value="alpha-desc">Alphabetical (Z-A)</option>
-                        </select>
+                    <div class="flex flex-wrap items-center gap-4 w-full md:w-auto justify-center md:justify-end">
+                        <!-- New: Items per page selector -->
+                        <div>
+                            <label for="items-per-page" class="text-gray-300 mr-2">Show:</label>
+                            <select id="items-per-page" class="px-3 py-2 rounded-lg border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="3">3 per page</option>
+                                <option value="6" selected>6 per page</option>
+                                <option value="9">9 per page</option>
+                                <option value="12">12 per page</option>
+                            </select>
+                        </div>
+
+                        <!-- Existing sort dropdown -->
+                        <div>
+                            <label for="sort-episodes" class="text-gray-300 mr-2 self-center">Sort by:</label>
+                            <select id="sort-episodes" class="px-3 py-2 rounded-lg border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="latest">Latest Date</option>
+                                <option value="earliest">Earliest Date</option>
+                                <option value="alpha-asc">Alphabetical (A-Z)</option>
+                                <option value="alpha-desc">Alphabetical (Z-A)</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Episodes list (keep existing episode cards here) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto" id="episodes-container">
+                <!-- Existing episode cards remain here -->
+            </div>
+
+            <!-- New: Pagination controls -->
+            <div class="text-center mt-12" id="pagination-controls">
+                <div class="flex justify-center items-center gap-2 md:gap-4">
+                    <button id="prev-page" class="px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white hover:bg-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fa fa-chevron-left mr-1"></i> Previous
+                    </button>
+                    <div id="page-numbers" class="flex gap-1">
+                        <!-- Page numbers will be generated here -->
+                    </div>
+                    <button id="next-page" class="px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white hover:bg-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        Next <i class="fa fa-chevron-right ml-1"></i>
+                    </button>
+                </div>
+                <p class="text-gray-400 text-sm mt-3" id="pagination-info">
+                    Showing <span id="showing-range">1-6</span> of <span id="total-episodes">9</span> episodes
+                </p>
             </div>
             
             <!-- Episodes list -->
@@ -498,54 +562,82 @@
 
             </div>
             
-            <div class="text-center mt-12">
-                <button id="load-more" class="px-8 py-3 bg-gray-800 border border-primary text-primary hover:bg-primary hover:text-white rounded-full transition-colors font-medium">
-                    Load More <i class="fa fa-refresh ml-2"></i>
-                </button>
-            </div>
+            
         </div>
     </section>
 
-    <!-- Bitcoin Donation Section -->
-    <section id="donate" class="py-20 bg-gray-900 border-t border-gray-800">
-        <div class="container mx-auto px-4">
+    <!-- Enhanced Bitcoin Donation Section -->
+    <section id="donate" class="py-20 bg-gradient-to-b from-gray-900 to-dark relative overflow-hidden">
+        <!-- Decorative elements -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-10">
+            <div class="absolute -top-10 -left-10 w-40 h-40 rounded-full bg-bitcoin blur-3xl"></div>
+            <div class="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-primary blur-3xl"></div>
+        </div>
+
+        <div class="container mx-auto px-4 relative z-10">
             <div class="text-center mb-16">
                 <h2 class="font-display font-bold text-[clamp(1.5rem,3vw,2.5rem)] mb-4 flex items-center justify-center">
-                    <i class="fa fa-bitcoin text-bitcoin mr-3"></i> Support Our Show
+                    <i class="fa fa-bitcoin text-bitcoin mr-3 animate-pulse"></i> Support Our Show
                 </h2>
-                <div class="w-20 h-1 bg-bitcoin mx-auto mb-6"></div>
+                <div class="w-20 h-1 bg-gradient-to-r from-bitcoin to-primary mx-auto mb-6"></div>
                 <p class="text-gray-300 max-w-2xl mx-auto text-lg">
                     If you enjoy our content, consider supporting us with a Bitcoin donation. Your contributions help us continue producing quality episodes.
                 </p>
             </div>
             
-            <div class="max-w-2xl mx-auto bg-gray-800 rounded-xl p-8 shadow-lg">
-                <div class="flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div class="flex-1 text-center md:text-left">
-                        <h3 class="text-xl font-bold mb-4 text-bitcoin">Bitcoin Donations</h3>
-                        
-                        <!-- Hoverable Bitcoin address with QR code -->
-                        <div class="qr-hover-container">
-                            <span class="qr-hover-trigger text-white font-medium underline cursor-pointer text-bitcoin">
-                                Hover over me to reveal the QR code.
-                            </span>
-                            <div class="qr-code">
-                                <!-- Replace with your actual Bitcoin QR code -->
-                                <img src="Bitcoin Address.png" alt="bc1qqcg0y23q2nt6ztgqmkx67m4uwmuh2f07rkv5wc" class="w-full h-full object-contain">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 md:p-10 shadow-2xl border border-gray-700/50 transform transition-all hover:shadow-bitcoin/20">
+                    <div class="flex flex-col lg:flex-row items-center justify-between gap-8 md:gap-12">
+                        <!-- Info Section (now on left side) -->
+                        <div class="flex-1 w-full text-center lg:text-left order-1 lg:order-1">
+                            <div class="inline-block px-4 py-1 rounded-full bg-bitcoin/10 text-bitcoin text-sm font-medium mb-4">
+                                Bitcoin Donation
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
+                                Support Independent Content
+                            </h3>
+                            <p class="text-gray-300 mb-6">
+                                Your donations help us keep the show independent and ad-free. Every contribution, no matter the size, is greatly appreciated!
+                            </p>
+                            
+                            <!-- Bitcoin address display -->
+                            <div class="bg-gray-700/50 rounded-lg p-4 mb-6 border border-gray-600">
+                                <div class="flex items-center flex-wrap gap-2">
+                                    <span class="text-gray-400 text-sm whitespace-nowrap">Our Address:</span>
+                                    <span class="text-gray-200 font-mono text-sm md:text-base break-all">
+                                        bc1qqcg0y23q2nt6ztgqmkx67m4uwmuh2f07rkv5wc
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
-                    </div>
-                    
-                    <div class="flex-1 flex justify-center">
-                        <div class="w-24 h-24 rounded-full bg-bitcoin/10 flex items-center justify-center">
-                            <i class="fa fa-bitcoin text-bitcoin text-5xl"></i>
+                        <!-- QR Code Section (now on right side) -->
+                        <div class="flex-1 w-full max-w-xs mx-auto lg:mx-0 order-2 lg:order-2">
+                            <div class="bg-white rounded-xl p-4 shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-bitcoin/30">
+                                <div id="bitcoin-qr" 
+                                    class="w-full aspect-square cursor-pointer relative overflow-hidden rounded-lg"
+                                    data-address="bc1qqcg0y23q2nt6ztgqmkx67m4uwmuh2f07rkv5wc">
+                                    <img src="Bitcoin Address.png" alt="Bitcoin QR Code for donations" class="w-full h-full object-contain">
+                                    <!-- Hover overlay -->
+                                    <div class="absolute inset-0 bg-bitcoin/80 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <span class="text-white font-bold text-lg flex items-center">
+                                            <i class="fa fa-copy mr-2"></i> Copy Address
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Copy feedback -->
+                            <p id="copy-message" class="mt-4 text-green-400 font-medium hidden text-center">
+                                <i class="fa fa-check-circle mr-2"></i> Address copied to clipboard!
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
 
     <!-- Subscription Section -->
     <section id="subscribe-section" class="py-20 bg-primary/10">
@@ -595,19 +687,17 @@
                         <a href="mailto:ludwigvonmises1881@outlook.com" class="text-primary hover:text-accent transition-colors text-lg font-medium">
                             ludwigvonmises1881@outlook.com
                         </a>
-                        <p class="text-gray-400 mt-2">Click on it and send us a message.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="bg-dark text-white py-12">
         <div class="container mx-auto px-4">
             <div class="border-t border-gray-800 pt-8 flex justify-center items-center">
                 <p class="text-gray-500 text-sm">
-                    &copy; 2025 The Robin-Anna-Alice Show. 
+                    &copy; <span id="current-year"></span> The Robin-Anna-Alice Show. 
                 </p>
             </div>
         </div>
@@ -764,7 +854,7 @@
             sortEpisodes(sortSelect.value);
         });
 
-        // Initialize with latest episodes first
+        // Initialise with latest episodes first
         window.addEventListener('DOMContentLoaded', () => {
             sortEpisodes('latest');
         });
@@ -835,17 +925,243 @@
             }
         });
 
-        document.getElementById('load-more').addEventListener('click', () => {
-            alert('In a full implementation, this would load more episodes!');
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get references to key elements
+            const episodesSection = document.getElementById('episodes');
+            const prevPageBtn = document.getElementById('prev-page');
+            const nextPageBtn = document.getElementById('next-page');
+            const pageNumbersContainer = document.getElementById('page-numbers');
+
+            // Function to scroll to the top of the episodes section
+            function scrollToEpisodesTop() {
+                episodesSection.scrollIntoView({ 
+                    behavior: 'smooth', // Smooth scroll animation
+                    block: 'start'      // Align to top of the section
+                });
+            }
+
+            // Add click handlers to pagination controls
+            prevPageBtn.addEventListener('click', scrollToEpisodesTop);
+            nextPageBtn.addEventListener('click', scrollToEpisodesTop);
+
+            // Handle dynamic page number buttons using event delegation
+            pageNumbersContainer.addEventListener('click', function(e) {
+                if (e.target.tagName === 'BUTTON') {
+                    scrollToEpisodesTop();
+                }
+            });
         });
 
-        // Bitcoin donation section enhancements for mobile
-        // Show QR code on click for touch devices
-        document.querySelector('.qr-hover-trigger').addEventListener('click', function() {
-            const qrCode = document.querySelector('.qr-code');
-            qrCode.classList.toggle('opacity-100');
-            qrCode.classList.toggle('visible');
+        // Bitcoin address copy functionality with enhanced UX
+        const bitcoinQr = document.getElementById('bitcoin-qr');
+        const copyMessage = document.getElementById('copy-message');
+        
+        bitcoinQr.addEventListener('click', function() {
+            const address = this.getAttribute('data-address');
+            
+            // Copy address to clipboard
+            navigator.clipboard.writeText(address)
+                .then(() => {
+                    // Show success message
+                    copyMessage.classList.remove('hidden');
+                    
+                    // Add animation class
+                    copyMessage.classList.add('animate-bounce');
+                    
+                    // Hide message after 3 seconds and remove animation
+                    setTimeout(() => {
+                        copyMessage.classList.add('hidden');
+                        copyMessage.classList.remove('animate-bounce');
+                    }, 3000);
+                })
+                .catch(err => {
+                    console.error('Could not copy address: ', err);
+                    alert('Failed to copy address. Please use this address: ' + address);
+                });
         });
+
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        document.addEventListener('DOMContentLoaded', function() {
+        // Pagination state
+        let currentPage = 1;
+        let itemsPerPage = 6; // Default matches the selected option
+        const episodeCards = Array.from(document.querySelectorAll('.episode-card'));
+        const totalEpisodes = episodeCards.length;
+        
+        // DOM Elements
+        const episodesContainer = document.getElementById('episodes-container');
+        const itemsPerPageSelect = document.getElementById('items-per-page');
+        const prevPageBtn = document.getElementById('prev-page');
+        const nextPageBtn = document.getElementById('next-page');
+        const pageNumbersContainer = document.getElementById('page-numbers');
+        const showingRangeEl = document.getElementById('showing-range');
+        const totalEpisodesEl = document.getElementById('total-episodes');
+        const searchInput = document.getElementById('search-episodes');
+        const sortSelect = document.getElementById('sort-episodes');
+
+        // Initialise
+        totalEpisodesEl.textContent = totalEpisodes;
+        renderEpisodes();
+
+        // Event Listeners
+        itemsPerPageSelect.addEventListener('change', function() {
+            itemsPerPage = parseInt(this.value);
+            currentPage = 1; // Reset to first page when changing per-page count
+            renderEpisodes();
+        });
+
+        prevPageBtn.addEventListener('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderEpisodes();
+            }
+        });
+
+        nextPageBtn.addEventListener('click', function() {
+            const totalPages = getTotalPages();
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderEpisodes();
+            }
+        });
+
+        searchInput.addEventListener('input', function() {
+            currentPage = 1; // Reset to first page on search
+            renderEpisodes();
+        });
+
+        sortSelect.addEventListener('change', function() {
+            currentPage = 1; // Reset to first page on sort change
+            renderEpisodes();
+        });
+
+        // Calculate total pages
+        function getTotalPages(filteredEpisodes = null) {
+            const episodesToCount = filteredEpisodes || episodeCards;
+            return Math.ceil(episodesToCount.length / itemsPerPage);
+        }
+
+        // Generate page number buttons
+        function renderPageNumbers(totalPages) {
+            pageNumbersContainer.innerHTML = '';
+            
+            // Show max 5 page numbers at once
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+
+            // Adjust if we're near the end
+            if (endPage - startPage < 4 && totalPages > 5) {
+                startPage = Math.max(1, endPage - 4);
+            }
+
+            // Add first page button if needed
+            if (startPage > 1) {
+                addPageButton(1);
+                if (startPage > 2) addEllipsis();
+            }
+
+            // Add current range of pages
+            for (let i = startPage; i <= endPage; i++) {
+                addPageButton(i);
+            }
+
+            // Add last page button if needed
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) addEllipsis();
+                addPageButton(totalPages);
+            }
+        }
+
+        // Helper to add page button
+        function addPageButton(pageNum) {
+            const button = document.createElement('button');
+            button.textContent = pageNum;
+            button.classList.toggle('active', pageNum === currentPage);
+            button.addEventListener('click', () => {
+                currentPage = pageNum;
+                renderEpisodes();
+            });
+            pageNumbersContainer.appendChild(button);
+        }
+
+        // Helper to add ellipsis separator
+        function addEllipsis() {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.classList.add('text-gray-400', 'px-2');
+            pageNumbersContainer.appendChild(ellipsis);
+        }
+
+        // Filter episodes based on search
+        function filterEpisodes() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            if (!searchTerm) return [...episodeCards];
+
+            return episodeCards.filter(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const description = card.querySelector('p').textContent.toLowerCase();
+                const keywords = card.dataset.keywords.toLowerCase();
+                const category = card.dataset.category.toLowerCase();
+                
+                return title.includes(searchTerm) || 
+                    description.includes(searchTerm) || 
+                    keywords.includes(searchTerm) || 
+                    category.includes(searchTerm);
+            });
+        }
+
+        // Sort episodes based on selection
+        function sortEpisodes(episodes) {
+            const sortBy = sortSelect.value;
+            return [...episodes].sort((a, b) => {
+                switch(sortBy) {
+                    case 'latest':
+                        return new Date(b.querySelector('.episode-date').textContent) - new Date(a.querySelector('.episode-date').textContent);
+                    case 'earliest':
+                        return new Date(a.querySelector('.episode-date').textContent) - new Date(b.querySelector('.episode-date').textContent);
+                    case 'alpha-asc':
+                        return a.querySelector('h3').textContent.localeCompare(b.querySelector('h3').textContent);
+                    case 'alpha-desc':
+                        return b.querySelector('h3').textContent.localeCompare(a.querySelector('h3').textContent);
+                    default:
+                        return 0;
+                }
+            });
+        }
+
+        // Main render function
+        function renderEpisodes() {
+            // Filter and sort episodes first
+            const filteredEpisodes = filterEpisodes();
+            const sortedEpisodes = sortEpisodes(filteredEpisodes);
+            const totalPages = getTotalPages(sortedEpisodes);
+
+            // Calculate pagination range
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const currentEpisodes = sortedEpisodes.slice(startIndex, endIndex);
+
+            // Update visible episodes
+            episodeCards.forEach(card => card.classList.add('hidden'));
+            currentEpisodes.forEach(card => card.classList.remove('hidden'));
+
+            // Update pagination info
+            const start = sortedEpisodes.length ? startIndex + 1 : 0;
+            const end = Math.min(endIndex, sortedEpisodes.length);
+            showingRangeEl.textContent = `${start}-${end}`;
+            totalEpisodesEl.textContent = sortedEpisodes.length;
+
+            // Update page numbers
+            renderPageNumbers(totalPages);
+
+            // Update button states
+            prevPageBtn.disabled = currentPage === 1;
+            nextPageBtn.disabled = currentPage === totalPages || totalPages === 0;
+        }
+    });
     </script>
 </body>
 </html>
